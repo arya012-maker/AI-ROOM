@@ -61,7 +61,7 @@ export async function POST(req) {
         aiImage: fileUrl,
       })
       .returning({ id: AiGeneratedImage.id });
-    return NextResponse.json({ result: dbResult[0] });
+    return NextResponse.json({ result: fileUrl });
   } catch (e) {
     console.error("Error:", e);
     return NextResponse.json({ error: e.message });

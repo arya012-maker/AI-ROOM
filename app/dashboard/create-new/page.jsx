@@ -1,4 +1,3 @@
-//
 "use client";
 
 import React from "react";
@@ -11,11 +10,19 @@ import { useState } from "react";
 import axios from "axios";
 import { storage } from "@/config/appwriteConfig";
 import { useUser } from "@clerk/nextjs";
+import CustomLoading from "./_components/CustomLoading";
+import AiOutputDialog from "../_components/AiOutputDialog";
 
 function CreateNew() {
+  const [loading, setLoading] = useState(false);
+
   const { user } = useUser();
   const [file, setFile] = useState(null);
   const [formData, setFormData] = useState({});
+  const [aiOutputImage, setAiOutputImage] = useState();
+  const [openOutputDialog, setOpenOutputDialog] = useState(false);
+  const [orgImage, setOrgImage] = useState();
+  // const [outputResult, setOutputResult] = useState(null);
 
   const onHandleInputChange = (value, fieldName) => {
     setFormData((prev) => ({
@@ -26,6 +33,7 @@ function CreateNew() {
   };
 
   const GenerateAiImage = async () => {
+    setLoading(true);
     try {
       const fileData = await SaveRawImageToAppwrite(file);
       const result = await axios.post("/api/redesign-room", {
@@ -36,6 +44,9 @@ function CreateNew() {
         userEmail: user?.primaryEmailAddress?.emailAddress,
       });
       console.log(result.data);
+      setAiOutputImage(result.data.result);
+      setOpenOutputDialog(true);
+      setLoading(false);
     } catch (error) {
       console.error("Error generating AI image:", error);
     }
@@ -63,6 +74,7 @@ function CreateNew() {
       const fileUrl = storage.getFileView("67982542003e5e0255b2", response.$id); // Use the same bucket ID
 
       // Return the file ID, name, and URL
+      setOrgImage(fileUrl);
       return {
         fileId: response.$id,
         fileName: fileName,
@@ -112,6 +124,13 @@ function CreateNew() {
           </p>
         </div>
       </div>
+      <CustomLoading loading={loading} />
+      <AiOutputDialog
+        openDialog={openOutputDialog}
+        closeDialog={() => setOpenOutputDialog(false)}
+        orgImage={orgImage}
+        aiImage={aiOutputImage}
+      />
     </div>
   );
 }
