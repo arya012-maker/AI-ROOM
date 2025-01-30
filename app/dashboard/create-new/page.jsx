@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { storage } from "@/config/appwriteConfig";
+import { useUser } from "@clerk/nextjs";
 
 function CreateNew() {
+  const { user } = useUser();
   const [file, setFile] = useState(null);
   const [formData, setFormData] = useState({});
 
@@ -31,6 +33,7 @@ function CreateNew() {
         roomType: formData?.roomType,
         designType: formData?.designType,
         additionalReq: formData?.additionalReq,
+        userEmail: user?.primaryEmailAddress?.emailAddress,
       });
       console.log(result.data);
     } catch (error) {

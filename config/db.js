@@ -3,4 +3,4 @@ import { config } from "dotenv";
 
 config();
 
-export const db = drizzle(process.env.NEXT_PUBLIC_DATABASE_URL);
+export const db = drizzle(process.env.DATABASE_URL);
