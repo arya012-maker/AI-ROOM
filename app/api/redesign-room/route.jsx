@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import Replicate from "replicate";
 import axios from "axios";
 import { db } from "@/config/db";
-// import { useUser } from "@clerk/nextjs";
 import { AiGeneratedImage } from "@/config/schema";
 
 const replicate = new Replicate({
@@ -11,9 +10,9 @@ const replicate = new Replicate({
 });
 
 export async function POST(req) {
-  // const { user } = useUser();
   try {
-    const { imageUrl, roomType, designType, additionalReq } = await req.json();
+    const { imageUrl, roomType, designType, additionalReq, userEmail } =
+      await req.json();
 
     const input = {
       image: imageUrl,
@@ -54,7 +53,7 @@ export async function POST(req) {
     const dbResult = await db
       .insert(AiGeneratedImage)
       .values({
-        userEmail: "",
+        userEmail: userEmail,
         roomType: roomType,
         designType: designType,
         additionalReq: "",
